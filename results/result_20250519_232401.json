@@ -1,0 +1,20 @@
+{
+    "label": "Symmetric",
+    "features": {
+        "brow_lid_margin_distance_left": 1.4101627993530834,
+        "brow_pupil_distance_left": 5.447555623908104,
+        "lid_margin_pupil_distance_left": 4.059661313759853,
+        "brow_lateral_canthal_distance_left": 1.3446760788955003,
+        "canthal_nasal_alar_distance_left": 4.37044939056124,
+        "brow_alar_distance_left": 5.68712595100653,
+        "brow_medial_canthal_distance_left": 2.9810407918028416,
+        "brow_lid_margin_distance_right": 1.4389445988798464,
+        "brow_pupil_distance_right": 5.99417952844688,
+        "lid_margin_pupil_distance_right": 4.6039993690130006,
+        "brow_lateral_canthal_distance_right": 1.38315468323339,
+        "canthal_nasal_alar_distance_right": 5.440702165807609,
+        "brow_alar_distance_right": 6.6876714700351485,
+        "brow_medial_canthal_distance_right": 3.1043399475223157
+    },
+    "image_filename": "upload_20250519_232400.png"
+}

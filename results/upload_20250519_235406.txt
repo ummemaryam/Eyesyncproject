@@ -1,0 +1,6 @@
+import joblib
+
+# Save the trained XGBoost model to a file
+model_filename = "xgboost_model.joblib"
+joblib.dump(xgboost_model, model_filename)
+print(f"Model saved to {model_filename}")

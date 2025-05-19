@@ -1,0 +1,20 @@
+{
+    "label": "Asymmetric",
+    "features": {
+        "brow_lid_margin_distance_left": 1.3498622659793384,
+        "brow_pupil_distance_left": 5.7971752931328835,
+        "lid_margin_pupil_distance_left": 4.4786947190506,
+        "brow_lateral_canthal_distance_left": 1.281469806243364,
+        "canthal_nasal_alar_distance_left": 4.695742752749558,
+        "brow_alar_distance_left": 5.939090963193604,
+        "brow_medial_canthal_distance_left": 3.1133297083809035,
+        "brow_lid_margin_distance_right": 1.2501923949059834,
+        "brow_pupil_distance_right": 5.181488285510946,
+        "lid_margin_pupil_distance_right": 3.9509510605421863,
+        "brow_lateral_canthal_distance_right": 1.247670753737823,
+        "canthal_nasal_alar_distance_right": 4.985722320356691,
+        "brow_alar_distance_right": 6.136189025110566,
+        "brow_medial_canthal_distance_right": 2.8351471883621167
+    },
+    "image_filename": "upload_20250519_234807.jpg"
+}

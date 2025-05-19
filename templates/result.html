@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EyeSync - Result</title>
+    <style>
+        body {
+            font-family: 'Roboto', Arial, sans-serif;
+            background: linear-gradient(135deg, #f8f9fa, #eef2f3);
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+
+        h1, h2, h3 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.8rem;
+            color: #2c3e50;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            color: #34495e;
+        }
+
+        h3 {
+            font-size: 1.5rem;
+            color: #34495e;
+            margin-top: 20px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 20px auto;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        li {
+            font-size: 1.2rem;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .button-group button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #6c63ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button-group button:hover {
+            background-color: #554bd1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: rgba(255, 255, 255, 1);
+            height: 65px;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .logo img {
+            width: 50px;
+            height: auto;
+        }
+
+        .logo h1 {
+            font-size: 2.9rem;
+            color: black;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .content {
+            padding-top: 100px; /* accommodate fixed header */
+            margin: 20px auto;
+            max-width: 650px;
+        }
+
+        .footer {
+            background: linear-gradient(135deg, #584adb, #968bf1);
+            color: #fff;
+            text-align: center;
+            padding: 1rem 2rem;
+            margin-top: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .footer p {
+            margin: 0.5rem 0;
+            font-size: 2.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="EyeSync logo" />
+            <h1>EyeSync</h1>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="content" role="main" aria-labelledby="main-title">
+        <h1 id="main-title">EyeSync Result</h1>
+        <h2>Label: {{ label }}</h2>
+
+        <section class="container">
+            {% if label == "Asymmetric" %}
+                <h3>Asymmetric Measurements:</h3>
+                <ul>
+                    {% for key, value in features.items() %}
+                        <li>{{ key }}: {{ value }}</li>
+                    {% endfor %}
+                </ul>
+
+                <h3>Predicted Symmetric Measurements (with adjustments):</h3>
+                <ul>
+                    {% for key, value in features.items() %}
+                        <li>{{ key }}: {{ value }} {{ adjustments[key] }}</li>
+                    {% endfor %}
+                </ul>
+            {% elif label == "Symmetric" %}
+                <h3>Symmetric Measurements:</h3>
+                <ul>
+                    {% for key, value in features.items() %}
+                        <li>{{ key }}: {{ value }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+
+        <!-- Button Group -->
+        <div class="button-group" role="group" aria-label="Navigation buttons">
+            <button type="button" id="go-back-btn">Go Back</button>
+            <button type="button" id="download-pdf-btn">Download Result</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer" role="contentinfo">
+        <p>&copy; 2025 EyeSync. All rights reserved.</p>
+    </footer>
+
+    <!-- Include jsPDF CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Go Back button handler with fallback
+            document.getElementById('go-back-btn').addEventListener('click', () => {
+                if (window.history.length > 1) {
+                    window.history.back();
+                } else {
+                    // fallback URL if no history exists
+                    window.location.href = '/';
+                }
+            });
+
+            // Download PDF button handler
+            document.getElementById('download-pdf-btn').addEventListener('click', () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+
+                const redColor = '#C0392B';
+                const blackColor = '#000000';
+                const marginX = 15;
+                const lineHeight = 9;
+                let y = 20;
+
+                const label = "{{ label }}";
+                const features = {{ features | tojson }};
+                const adjustments = {{ adjustments | tojson if label == "Asymmetric" else '{}' }};
+
+                // Title (centered)
+                doc.setTextColor(blackColor);
+                doc.setFontSize(20);
+                doc.setFont('helvetica', 'bold');
+                doc.text("EyeSync Result", doc.internal.pageSize.getWidth() / 2, y, { align: 'center' });
+                y += 15;
+
+                // Label (red)
+                doc.setFontSize(14);
+                doc.setTextColor(redColor);
+                doc.setFont('helvetica', 'bold');
+                doc.text(`Label: ${label}`, marginX, y);
+                y += 12;
+
+                function drawTable(title, data, startY, titleColor = redColor) {
+                    let currentY = startY;
+
+                    // Title
+                    doc.setTextColor(titleColor);
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(title, marginX, currentY);
+                    currentY += lineHeight;
+
+                    // Table header
+                    doc.setFont('helvetica', 'bold');
+                    doc.setTextColor(blackColor);
+                    doc.text("Measurement", marginX + 2, currentY);
+                    doc.text("Value", 130, currentY);
+                    currentY += lineHeight;
+
+                    // Draw underline for header
+                    doc.setDrawColor(0);
+                    doc.setLineWidth(0.1);
+                    doc.line(marginX, currentY - 6, 200, currentY - 6);
+
+                    doc.setFont('helvetica', 'normal');
+
+                    for (const [key, value] of Object.entries(data)) {
+                        if (currentY > doc.internal.pageSize.getHeight() - 20) {
+                            doc.addPage();
+                            currentY = 20;
+                        }
+                        doc.text(key, marginX + 2, currentY);
+                        doc.text(String(value), 130, currentY);
+                        currentY += lineHeight;
+                    }
+
+                    return currentY + 5;
+                }
+
+                if (label === "Asymmetric") {
+                    y = drawTable("Asymmetric Measurements:", features, y);
+                    let adjustedFeatures = {};
+                    for (const key in features) {
+                        adjustedFeatures[key] = `${features[key]} ${adjustments[key] || ''}`;
+                    }
+                    y = drawTable("Predicted Symmetric Measurements (with adjustments):", adjustedFeatures, y, blackColor);
+                } else {
+                    y = drawTable("Symmetric Measurements:", features, y, blackColor);
+                }
+
+                doc.save("EyeSync_Result.pdf");
+            });
+
+            // Notification permission and display
+            if ('Notification' in window) {
+                if (Notification.permission === 'granted') {
+                    new Notification('EyeSync', {
+                        body: 'Result is ready! Click to view.',
+                        icon: '{{ url_for("static", filename="logo.png") }}'
+                    });
+                } else if (Notification.permission !== 'denied') {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification('EyeSync', {
+                                body: 'Result is ready! Click to view.',
+                                icon: '{{ url_for("static", filename="logo.png") }}'
+                            });
+                        }
+                    });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
